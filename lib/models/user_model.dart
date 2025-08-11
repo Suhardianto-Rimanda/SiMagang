@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 enum UserRole { admin, supervisor, intern, unknown }
 
 class User {
