@@ -16,10 +16,10 @@ class AuthWrapper extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
 
     switch (authProvider.status) {
-      case AuthStatus.Uninitialized:
-      case AuthStatus.Authenticating:
+      case AuthStatus.uninitialized:
+      case AuthStatus.authenticating:
         return const SplashScreen(); // Tampilkan loading screen
-      case AuthStatus.Authenticated:
+      case AuthStatus.authenticated:
       // Cek role dan arahkan ke halaman yang sesuai
         switch (authProvider.user?.role) {
           case UserRole.admin:
@@ -32,8 +32,7 @@ class AuthWrapper extends StatelessWidget {
           // Jika role tidak dikenali, fallback ke login
             return const LoginPage();
         }
-      case AuthStatus.Unauthenticated:
-      default:
+      case AuthStatus.unauthenticated:
         return const LoginPage();
     }
   }
