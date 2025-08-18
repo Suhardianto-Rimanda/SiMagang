@@ -38,7 +38,7 @@ class AuthService {
         print('[AuthService] Respons API Sukses: $data');
 
         String token = data['access_token'];
-        User user = User.fromJson(data['data']);
+        UserModel user = UserModel.fromJson(data['data']);
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);

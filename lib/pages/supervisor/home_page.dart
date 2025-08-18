@@ -35,8 +35,8 @@ class SupervisorHomePage extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            Text('Anda login sebagai Supervisor.'),
-            // Tambahkan widget lain untuk dashboard supervisor di sini
+            Text('Anda login sebagai Admin.'),
+            // Tambahkan widget lain untuk dashboard admin di sini
           ],
         ),
       ),

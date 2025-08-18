@@ -9,13 +9,13 @@ enum AuthStatus { Uninitialized, Authenticated, Authenticating, Unauthenticated 
 
 class AuthProvider with ChangeNotifier {
   AuthStatus _status = AuthStatus.Uninitialized;
-  User? _user;
+  UserModel? _user;
   String? _token;
 
   final AuthService _authService = AuthService();
 
   AuthStatus get status => _status;
-  User? get user => _user;
+  UserModel? get user => _user;
   String? get token => _token;
 
   AuthProvider() {
@@ -50,7 +50,7 @@ class AuthProvider with ChangeNotifier {
 
     _token = prefs.getString('token');
     final userData = jsonDecode(prefs.getString('user')!);
-    _user = User.fromJson(userData);
+    _user = UserModel.fromJson(userData);
     _status = AuthStatus.Authenticated;
     notifyListeners();
   }

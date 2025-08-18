@@ -36,7 +36,7 @@ class InternHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('Anda login sebagai Intern.'),
-            // Tambahkan widget lain untuk dashboard intern di sini
+            // Tambahkan widget lain untuk dashboard admin di sini
           ],
         ),
       ),
