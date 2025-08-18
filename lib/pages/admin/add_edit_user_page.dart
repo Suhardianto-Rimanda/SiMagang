@@ -33,7 +33,7 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
 
   String _selectedRole = 'intern';
   String? _selectedGender;
-  int? _selectedSupervisorId;
+  String? _selectedSupervisorId;
 
   @override
   void initState() {
@@ -301,14 +301,26 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
           const SizedBox(height: 16),
           Consumer<UserProvider>(
             builder: (context, provider, child) {
-              return DropdownButtonFormField<int>(
-                value: _selectedSupervisorId,
+              final supervisorItems = provider.supervisors;
+
+              // FIX: Logika yang paling sederhana dan aman
+              final uniqueSupervisorMap = {for (var s in supervisorItems) s.id: s};
+              final uniqueSupervisorList = uniqueSupervisorMap.values.toList();
+
+              String? currentValue = _selectedSupervisorId;
+              if (currentValue != null && !uniqueSupervisorMap.containsKey(currentValue)) {
+                currentValue = null;
+              }
+
+              return DropdownButtonFormField<String>( // FIX: Ubah ke String
+                value: currentValue,
                 decoration: const InputDecoration(labelText: 'Supervisor'),
-                items: provider.supervisors
-                    .map((s) => DropdownMenuItem(value: s.id, child: Text(s.fullName)))
-                    .toList(),
+                items: uniqueSupervisorList.map((s) => DropdownMenuItem(
+                  value: s.id,
+                  child: Text(s.fullName),
+                )).toList(),
                 onChanged: (value) => setState(() => _selectedSupervisorId = value),
-                validator: (v) => v == null ? 'Pilih supervisor' : null,
+                validator: (v) => v == null ? 'Wajib dipilih' : null,
               );
             },
           ),

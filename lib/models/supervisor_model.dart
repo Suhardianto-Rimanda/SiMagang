@@ -1,7 +1,7 @@
 import 'intern_model.dart';
 
 class SupervisorModel {
-  final int id;
+  final String id;
   final String fullName;
   final String? division;
   final List<InternModel>? interns; // Relasi ke banyak Intern
@@ -22,7 +22,7 @@ class SupervisorModel {
     }
 
     return SupervisorModel(
-      id: json['id'],
+      id: json['id'].toString(),
       fullName: json['full_name'],
       division: json['division'],
       interns: interns,

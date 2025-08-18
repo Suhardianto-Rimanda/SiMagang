@@ -1,7 +1,7 @@
 import 'supervisor_model.dart';
 
 class InternModel {
-  final int id;
+  final String id;
   final String fullName;
   final String? division;
   final String? schoolOrigin;
@@ -29,7 +29,7 @@ class InternModel {
 
   factory InternModel.fromJson(Map<String, dynamic> json) {
     return InternModel(
-      id: json['id'],
+      id: json['id'].toString(),
       fullName: json['full_name'],
       division: json['division'],
       schoolOrigin: json['school_origin'],

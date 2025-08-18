@@ -23,7 +23,7 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
+      id: json['id']?.toString() ?? '',
       name: json['name'],
       email: json['email'],
       role: _parseRole(json['role']),
@@ -41,9 +41,8 @@ class UserModel {
     };
   }
 
-  static UserRole _parseRole(dynamic role) {
-    String roleString = role.toString().toLowerCase();
-    switch (roleString) {
+  static UserRole _parseRole(String? roleString) {
+    switch (roleString?.toLowerCase()) {
       case 'admin':
         return UserRole.admin;
       case 'supervisor':
