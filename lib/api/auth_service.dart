@@ -14,6 +14,9 @@ class AuthService {
 
     final Uri loginUri = Uri.parse('$_baseUrl/login');
 
+    // 1. Mencetak URL yang dituju untuk memastikan tidak ada typo.
+    print('[AuthService] Mencoba login ke: $loginUri');
+
     try {
       final response = await http.post(
         loginUri,
@@ -27,8 +30,12 @@ class AuthService {
         }),
       );
 
+      // 2. Memeriksa apakah respons sukses atau tidak.
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        // Ini akan tercetak jika login berhasil.
+        print('[AuthService] Respons API Sukses: $data');
 
         String token = data['access_token'];
         User user = User.fromJson(data['data']);
@@ -39,12 +46,18 @@ class AuthService {
 
         return {'user': user, 'token': token};
       } else {
+        // 3. Blok ini akan berjalan jika server merespons dengan error (4xx atau 5xx).
+        print('[AuthService] Login Gagal. Status Code: ${response.statusCode}');
+        print('[AuthService] Error Body: ${response.body}');
 
+        // Coba decode error message dari server
         final errorData = jsonDecode(response.body);
         String errorMessage = errorData['message'] ?? 'Terjadi kesalahan server.';
         throw Exception(errorMessage);
       }
     } catch (e) {
+      // 4. Blok ini akan menangkap error jaringan atau masalah lain.
+      print('[AuthService] Terjadi exception saat request: $e');
       throw Exception('Tidak dapat terhubung ke server. Periksa koneksi internet atau konfigurasi URL.');
     }
   }
