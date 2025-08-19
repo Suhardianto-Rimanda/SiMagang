@@ -80,6 +80,17 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime(1950),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: const Color(0xFF2563EB),
+              surface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -133,14 +144,20 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Pengguna berhasil ${_isEditMode ? 'diperbarui' : 'ditambahkan'}'),
-            backgroundColor: Colors.green,
+            backgroundColor: const Color(0xFF10B981),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${userProvider.errorMessage}'),
-            backgroundColor: Colors.red,
+            backgroundColor: const Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
           ),
         );
       }
@@ -150,32 +167,110 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Ubah Pengguna' : 'Tambah Pengguna'),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1F2937),
+        title: Text(
+          _isEditMode ? 'Ubah Pengguna' : 'Tambah Pengguna',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1F2937),
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 16,
+              color: Color(0xFF6B7280),
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildBasicInfoFields(),
-              const SizedBox(height: 16),
-              _buildRoleSpecificFields(),
-              const SizedBox(height: 32),
+              _buildSectionCard(
+                title: 'Informasi Dasar',
+                icon: Icons.person_outline,
+                child: _buildBasicInfoFields(),
+              ),
+              const SizedBox(height: 20),
+              if (_selectedRole != 'admin') ...[
+                _buildSectionCard(
+                  title: _selectedRole == 'intern' ? 'Informasi Magang' : 'Informasi Supervisor',
+                  icon: _selectedRole == 'intern' ? Icons.school_outlined : Icons.supervisor_account_outlined,
+                  child: _buildRoleSpecificFields(),
+                ),
+                const SizedBox(height: 32),
+              ] else
+                const SizedBox(height: 32),
               Consumer<UserProvider>(
                 builder: (context, provider, child) {
-                  return ElevatedButton(
-                    onPressed: provider.operationStatus == UserOperationStatus.loading
-                        ? null
-                        : _submitForm,
-                    child: provider.operationStatus == UserOperationStatus.loading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(_isEditMode ? 'Simpan Perubahan' : 'Tambah Pengguna'),
+                  return Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF3B82F6).withValues(),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: provider.operationStatus == UserOperationStatus.loading
+                          ? null
+                          : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: provider.operationStatus == UserOperationStatus.loading
+                          ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                          : Text(
+                        _isEditMode ? 'Simpan Perubahan' : 'Tambah Pengguna',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -183,40 +278,230 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
     );
   }
 
+  Widget _buildSectionCard({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF3B82F6).withValues(),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: const Color(0xFF3B82F6),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1F2937),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomTextField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF374151),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          readOnly: readOnly,
+          onTap: onTap,
+          validator: validator,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Color(0xFF1F2937),
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: const Color(0xFF9CA3AF),
+              fontSize: 16,
+            ),
+            suffixIcon: suffixIcon,
+            filled: true,
+            fillColor: const Color(0xFFF9FAFB),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomDropdown<T>({
+    required String label,
+    required T? value,
+    required List<DropdownMenuItem<T>> items,
+    required void Function(T?) onChanged,
+    String? Function(T?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF374151),
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<T>(
+          value: value,
+          items: items,
+          onChanged: onChanged,
+          validator: validator,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFFF9FAFB),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          ),
+          style: const TextStyle(
+            fontSize: 16,
+            color: Color(0xFF1F2937),
+          ),
+          dropdownColor: Colors.white,
+        ),
+      ],
+    );
+  }
+
   Widget _buildBasicInfoFields() {
     return Column(
       children: [
-        TextFormField(
+        _buildCustomTextField(
           controller: _nameController,
-          decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+          label: 'Nama Lengkap',
           validator: (v) => v!.isEmpty ? 'Nama tidak boleh kosong' : null,
         ),
-        const SizedBox(height: 16),
-        TextFormField(
+        const SizedBox(height: 20),
+        _buildCustomTextField(
           controller: _emailController,
-          decoration: const InputDecoration(labelText: 'Email'),
+          label: 'Email',
           keyboardType: TextInputType.emailAddress,
           validator: (v) => v!.isEmpty ? 'Email tidak boleh kosong' : null,
         ),
-        const SizedBox(height: 16),
-        TextFormField(
+        const SizedBox(height: 20),
+        _buildCustomTextField(
           controller: _passwordController,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: _isEditMode ? 'Kosongkan jika tidak ingin mengubah' : null,
-          ),
+          label: 'Password',
+          hint: _isEditMode ? 'Kosongkan jika tidak ingin mengubah' : null,
           obscureText: true,
           validator: (v) {
             if (!_isEditMode && v!.isEmpty) return 'Password tidak boleh kosong';
             return null;
           },
         ),
-        const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
+        const SizedBox(height: 20),
+        _buildCustomDropdown<String>(
+          label: 'Role',
           value: _selectedRole,
-          decoration: const InputDecoration(labelText: 'Role'),
           items: ['intern', 'supervisor', 'admin']
-              .map((role) => DropdownMenuItem(value: role, child: Text(role)))
+              .map((role) => DropdownMenuItem(
+            value: role,
+            child: Text(
+              role.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ))
               .toList(),
           onChanged: (value) {
             if (value != null) setState(() => _selectedRole = value);
@@ -228,73 +513,94 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
 
   Widget _buildRoleSpecificFields() {
     if (_selectedRole == 'supervisor') {
-      return TextFormField(
+      return _buildCustomTextField(
         controller: _divisionController,
-        decoration: const InputDecoration(labelText: 'Divisi'),
+        label: 'Divisi',
         validator: (v) => v!.isEmpty ? 'Divisi tidak boleh kosong' : null,
       );
     } else if (_selectedRole == 'intern') {
       return Column(
         children: [
-          TextFormField(
+          _buildCustomTextField(
             controller: _divisionController,
-            decoration: const InputDecoration(labelText: 'Divisi'),
+            label: 'Divisi',
             validator: (v) => v!.isEmpty ? 'Divisi tidak boleh kosong' : null,
           ),
-          const SizedBox(height: 16),
-          TextFormField(
+          const SizedBox(height: 20),
+          _buildCustomTextField(
             controller: _schoolOriginController,
-            decoration: const InputDecoration(labelText: 'Asal Sekolah/Universitas'),
+            label: 'Asal Sekolah/Universitas',
             validator: (v) => v!.isEmpty ? 'Asal sekolah tidak boleh kosong' : null,
           ),
-          const SizedBox(height: 16),
-          TextFormField(
+          const SizedBox(height: 20),
+          _buildCustomTextField(
             controller: _majorController,
-            decoration: const InputDecoration(labelText: 'Jurusan'),
+            label: 'Jurusan',
             validator: (v) => v!.isEmpty ? 'Jurusan tidak boleh kosong' : null,
           ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
+          const SizedBox(height: 20),
+          _buildCustomDropdown<String>(
+            label: 'Jenis Kelamin',
             value: _selectedGender,
-            decoration: const InputDecoration(labelText: 'Jenis Kelamin'),
             items: ['Laki-laki', 'Perempuan']
-                .map((gender) => DropdownMenuItem(value: gender, child: Text(gender)))
+                .map((gender) => DropdownMenuItem(
+              value: gender,
+              child: Text(gender),
+            ))
                 .toList(),
             onChanged: (value) => setState(() => _selectedGender = value),
             validator: (v) => v == null ? 'Pilih jenis kelamin' : null,
           ),
-          const SizedBox(height: 16),
-          TextFormField(
+          const SizedBox(height: 20),
+          _buildCustomTextField(
             controller: _phoneNumberController,
-            decoration: const InputDecoration(labelText: 'Nomor Telepon'),
+            label: 'Nomor Telepon',
             keyboardType: TextInputType.phone,
             validator: (v) => v!.isEmpty ? 'Nomor telepon tidak boleh kosong' : null,
           ),
-          const SizedBox(height: 16),
-          TextFormField(
+          const SizedBox(height: 20),
+          _buildCustomTextField(
             controller: _birthDateController,
-            decoration: const InputDecoration(labelText: 'Tanggal Lahir', hintText: 'YYYY-MM-DD'),
+            label: 'Tanggal Lahir',
+            hint: 'YYYY-MM-DD',
             readOnly: true,
             onTap: () => _selectDate(context, _birthDateController),
             validator: (v) => v!.isEmpty ? 'Tanggal lahir tidak boleh kosong' : null,
+            suffixIcon: const Icon(
+              Icons.calendar_today_outlined,
+              color: Color(0xFF6B7280),
+              size: 20,
+            ),
           ),
-          const SizedBox(height: 16),
-          TextFormField(
+          const SizedBox(height: 20),
+          _buildCustomTextField(
             controller: _startDateController,
-            decoration: const InputDecoration(labelText: 'Tanggal Mulai', hintText: 'YYYY-MM-DD'),
+            label: 'Tanggal Mulai',
+            hint: 'YYYY-MM-DD',
             readOnly: true,
             onTap: () => _selectDate(context, _startDateController),
             validator: (v) => v!.isEmpty ? 'Tanggal mulai tidak boleh kosong' : null,
+            suffixIcon: const Icon(
+              Icons.calendar_today_outlined,
+              color: Color(0xFF6B7280),
+              size: 20,
+            ),
           ),
-          const SizedBox(height: 16),
-          TextFormField(
+          const SizedBox(height: 20),
+          _buildCustomTextField(
             controller: _endDateController,
-            decoration: const InputDecoration(labelText: 'Tanggal Selesai', hintText: 'YYYY-MM-DD'),
+            label: 'Tanggal Selesai',
+            hint: 'YYYY-MM-DD',
             readOnly: true,
             onTap: () => _selectDate(context, _endDateController),
             validator: (v) => v!.isEmpty ? 'Tanggal selesai tidak boleh kosong' : null,
+            suffixIcon: const Icon(
+              Icons.calendar_today_outlined,
+              color: Color(0xFF6B7280),
+              size: 20,
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Consumer<UserProvider>(
             builder: (context, provider, child) {
               final supervisorItems = provider.supervisors;
@@ -306,13 +612,15 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
                 currentValue = null;
               }
 
-              return DropdownButtonFormField<String>(
+              return _buildCustomDropdown<String>(
+                label: 'Supervisor',
                 value: currentValue,
-                decoration: const InputDecoration(labelText: 'Supervisor'),
-                items: uniqueSupervisorList.map((s) => DropdownMenuItem(
+                items: uniqueSupervisorList
+                    .map((s) => DropdownMenuItem(
                   value: s.id,
                   child: Text(s.fullName),
-                )).toList(),
+                ))
+                    .toList(),
                 onChanged: (value) => setState(() => _selectedSupervisorId = value),
                 validator: (v) => v == null ? 'Wajib dipilih' : null,
               );
