@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart'; // Untuk format tanggal
+import 'package:intl/intl.dart';
 import '../../models/user_model.dart';
 import '../../providers/user_provider.dart';
 
@@ -19,7 +19,6 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
   final _formKey = GlobalKey<FormState>();
   bool get _isEditMode => widget.user != null;
 
-  // Controllers untuk semua field
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -47,11 +46,10 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
 
     _nameController = TextEditingController(text: widget.user?.name ?? '');
     _emailController = TextEditingController(text: widget.user?.email ?? '');
-    _passwordController = TextEditingController(); // Selalu kosong
+    _passwordController = TextEditingController(); 
 
     _selectedRole = widget.user?.role.name ?? 'intern';
 
-    // Inisialisasi data spesifik role
     _divisionController = TextEditingController(text: internData?.division ?? supervisorData?.division ?? '');
     _schoolOriginController = TextEditingController(text: internData?.schoolOrigin ?? '');
     _majorController = TextEditingController(text: internData?.major ?? '');
