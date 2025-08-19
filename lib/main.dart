@@ -6,7 +6,6 @@ import 'providers/auth_provider.dart';
 import 'package:app_simagang/pages/auth/auth_wrapper.dart';
 
 void main() async {
-  // Pastikan widget binding sudah siap sebelum memuat .env
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
@@ -29,7 +28,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.indigo,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        // AuthWrapper menjadi halaman utama
         home: const AuthWrapper(),
         debugShowCheckedModeBanner: false,
       ),

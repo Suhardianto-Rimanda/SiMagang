@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/auth_service.dart';
 import '../models/user_model.dart';
 
-// Enum untuk status autentikasi
 enum AuthStatus { uninitialized, authenticated, authenticating, unauthenticated }
 
 class AuthProvider with ChangeNotifier {

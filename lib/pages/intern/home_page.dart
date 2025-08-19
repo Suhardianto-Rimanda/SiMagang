@@ -7,7 +7,6 @@ class InternHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mengakses data pengguna dari AuthProvider
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
 
@@ -15,12 +14,10 @@ class InternHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Intern Dashboard - ${user?.name ?? 'Intern'}'),
         actions: [
-          // Tombol untuk logout
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
             onPressed: () {
-              // Memanggil fungsi logout dari provider
               Provider.of<AuthProvider>(context, listen: false).logout();
             },
           ),
@@ -36,7 +33,6 @@ class InternHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('Anda login sebagai Intern.'),
-            // Tambahkan widget lain untuk dashboard admin di sini
           ],
         ),
       ),

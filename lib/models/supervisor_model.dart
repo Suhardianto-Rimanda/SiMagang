@@ -4,7 +4,7 @@ class SupervisorModel {
   final String id;
   final String fullName;
   final String? division;
-  final List<InternModel>? interns; // Relasi ke banyak Intern
+  final List<InternModel>? interns;
 
   SupervisorModel({
     required this.id,
@@ -14,7 +14,6 @@ class SupervisorModel {
   });
 
   factory SupervisorModel.fromJson(Map<String, dynamic> json) {
-    // Mengambil list intern jika ada
     var internList = json['interns'] as List?;
     List<InternModel>? interns;
     if (internList != null) {

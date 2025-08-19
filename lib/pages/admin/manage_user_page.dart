@@ -15,13 +15,11 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
   @override
   void initState() {
     super.initState();
-    // Mengambil data pengguna saat halaman pertama kali dimuat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).fetchUsers();
     });
   }
 
-  // Fungsi untuk menampilkan dialog konfirmasi sebelum menghapus
   void _showDeleteConfirmationDialog(BuildContext context, UserModel user) {
     showDialog(
       context: context,
@@ -120,8 +118,8 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
             MaterialPageRoute(builder: (context) => const AddEditUserPage()),
           );
         },
-        child: const Icon(Icons.add),
         tooltip: 'Tambah Pengguna',
+        child: const Icon(Icons.add),
       ),
     );
   }
