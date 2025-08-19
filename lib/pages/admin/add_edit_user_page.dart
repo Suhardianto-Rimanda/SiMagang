@@ -1,6 +1,8 @@
+// lib/pages/admin/add_edit_user_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; // Untuk format tanggal
 import '../../models/user_model.dart';
 import '../../providers/user_provider.dart';
 
@@ -17,6 +19,7 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
   final _formKey = GlobalKey<FormState>();
   bool get _isEditMode => widget.user != null;
 
+  // Controllers untuk semua field
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -44,10 +47,11 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
 
     _nameController = TextEditingController(text: widget.user?.name ?? '');
     _emailController = TextEditingController(text: widget.user?.email ?? '');
-    _passwordController = TextEditingController();
+    _passwordController = TextEditingController(); // Selalu kosong
 
     _selectedRole = widget.user?.role.name ?? 'intern';
 
+    // Inisialisasi data spesifik role
     _divisionController = TextEditingController(text: internData?.division ?? supervisorData?.division ?? '');
     _schoolOriginController = TextEditingController(text: internData?.schoolOrigin ?? '');
     _majorController = TextEditingController(text: internData?.major ?? '');
@@ -298,6 +302,8 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
           Consumer<UserProvider>(
             builder: (context, provider, child) {
               final supervisorItems = provider.supervisors;
+
+              // FIX: Logika yang paling sederhana dan aman
               final uniqueSupervisorMap = {for (var s in supervisorItems) s.id: s};
               final uniqueSupervisorList = uniqueSupervisorMap.values.toList();
 
@@ -306,7 +312,7 @@ class _AddEditUserPageState extends State<AddEditUserPage> {
                 currentValue = null;
               }
 
-              return DropdownButtonFormField<String>(
+              return DropdownButtonFormField<String>( // FIX: Ubah ke String
                 value: currentValue,
                 decoration: const InputDecoration(labelText: 'Supervisor'),
                 items: uniqueSupervisorList.map((s) => DropdownMenuItem(
