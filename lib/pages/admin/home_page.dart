@@ -1,3 +1,5 @@
+// lib/pages/admin/home_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_simagang/providers/auth_provider.dart';
@@ -27,8 +29,10 @@ class AdminHomePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
+          // Bagian Header Sambutan
           _buildWelcomeHeader(context, userName),
           const SizedBox(height: 24),
+          // Grid untuk menu-menu admin
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -78,6 +82,7 @@ class AdminHomePage extends StatelessWidget {
     );
   }
 
+  // Widget untuk header sambutan
   Widget _buildWelcomeHeader(BuildContext context, String name) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -105,6 +110,7 @@ class AdminHomePage extends StatelessWidget {
     );
   }
 
+  // Widget untuk kartu menu di dashboard
   Widget _buildDashboardCard(
       BuildContext context, {
         required IconData icon,

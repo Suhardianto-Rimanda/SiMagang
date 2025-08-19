@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text,
       );
 
+      // Tambahkan pengecekan 'mounted' di sini
       if (mounted) {
         if (!success) {
           setState(() {
@@ -41,7 +42,9 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
       }
+      // Jika berhasil, AuthWrapper akan otomatis mengarahkan ke halaman home
     } catch (error) {
+      // Tambahkan pengecekan 'mounted' di sini juga
       if (mounted) {
         setState(() {
           _errorMessage = error.toString().replaceFirst('Exception: ', '');
