@@ -47,7 +47,6 @@ class UserService {
       return UserModel.fromJson(jsonDecode(response.body)['user']);
     } else {
       final errorBody = jsonDecode(response.body);
-      print('[UserService] Error saat menambah pengguna: ${errorBody.toString()}');
       throw Exception('Gagal menambah pengguna: ${errorBody.toString()}');
     }
   }
@@ -63,7 +62,6 @@ class UserService {
       return UserModel.fromJson(jsonDecode(response.body)['user']);
     } else {
       final errorBody = jsonDecode(response.body);
-      print('[UserService] Error saat memperbarui pengguna: ${errorBody.toString()}');
       throw Exception('Gagal memperbarui pengguna: ${errorBody.toString()}');
     }
   }
@@ -76,7 +74,6 @@ class UserService {
 
     if (response.statusCode != 200) {
       final errorBody = jsonDecode(response.body);
-      print('[UserService] Error saat menghapus pengguna: ${errorBody.toString()}');
       throw Exception('Gagal menghapus pengguna: ${errorBody['message']}');
     }
   }

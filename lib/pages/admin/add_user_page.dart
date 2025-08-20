@@ -13,7 +13,6 @@ class AddUserPage extends StatefulWidget {
 class _AddUserPageState extends State<AddUserPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -25,7 +24,6 @@ class _AddUserPageState extends State<AddUserPage> {
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
 
-  // State
   String _selectedRole = 'intern';
   String? _selectedGender;
   String? _selectedSupervisorId;

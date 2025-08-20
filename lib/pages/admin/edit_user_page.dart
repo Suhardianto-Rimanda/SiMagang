@@ -16,7 +16,6 @@ class EditUserPage extends StatefulWidget {
 class _EditUserPageState extends State<EditUserPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   final _newPasswordController = TextEditingController();
@@ -28,7 +27,6 @@ class _EditUserPageState extends State<EditUserPage> {
   late TextEditingController _startDateController;
   late TextEditingController _endDateController;
 
-  // State
   late String _selectedRole;
   String? _selectedGender;
   String? _selectedSupervisorId;
@@ -60,7 +58,6 @@ class _EditUserPageState extends State<EditUserPage> {
 
   @override
   void dispose() {
-    // ... dispose all controllers
     super.dispose();
   }
 
