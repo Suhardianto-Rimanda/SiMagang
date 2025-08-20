@@ -11,6 +11,7 @@ class InternModel {
   final String? birthDate;
   final String? startDate;
   final String? endDate;
+  final String? internType;
   final SupervisorModel? supervisor;
 
   InternModel({
@@ -24,6 +25,7 @@ class InternModel {
     this.birthDate,
     this.startDate,
     this.endDate,
+    this.internType,
     this.supervisor,
   });
 
@@ -39,6 +41,7 @@ class InternModel {
       birthDate: json['birth_date'],
       startDate: json['start_date'],
       endDate: json['end_date'],
+      internType: json['intern_type'],
       supervisor: json['supervisor'] != null
           ? SupervisorModel.fromJson(json['supervisor'])
           : null,

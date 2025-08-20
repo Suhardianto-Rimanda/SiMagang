@@ -29,6 +29,7 @@ class _EditUserPageState extends State<EditUserPage> {
 
   late String _selectedRole;
   String? _selectedGender;
+  String? _selectedInternType;
   String? _selectedSupervisorId;
 
   @override
@@ -53,6 +54,7 @@ class _EditUserPageState extends State<EditUserPage> {
     _birthDateController = TextEditingController(text: internData?.birthDate ?? '');
     _startDateController = TextEditingController(text: internData?.startDate ?? '');
     _endDateController = TextEditingController(text: internData?.endDate ?? '');
+    _selectedInternType = internData?.internType;
     _selectedSupervisorId = internData?.supervisor?.id;
   }
 
@@ -96,6 +98,7 @@ class _EditUserPageState extends State<EditUserPage> {
         'birth_date': _birthDateController.text,
         'start_date': _startDateController.text,
         'end_date': _endDateController.text,
+        'intern_type': _selectedInternType,
         'supervisor_id': _selectedSupervisorId,
       });
     }
@@ -177,7 +180,7 @@ class _EditUserPageState extends State<EditUserPage> {
           const SizedBox(height: 16),
           TextFormField(controller: _majorController, decoration: const InputDecoration(labelText: 'Jurusan'), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(value: _selectedGender, decoration: const InputDecoration(labelText: 'Jenis Kelamin'), items: ['Laki-laki', 'Perempuan'].map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(), onChanged: (v) => setState(() => _selectedGender = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
+          DropdownButtonFormField<String>(value: _selectedGender, decoration: const InputDecoration(labelText: 'Jenis Kelamin'), items: ['Pria', 'Wanita'].map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(), onChanged: (v) => setState(() => _selectedGender = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
           const SizedBox(height: 16),
           TextFormField(controller: _phoneNumberController, decoration: const InputDecoration(labelText: 'Nomor Telepon'), keyboardType: TextInputType.phone, validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
@@ -186,6 +189,8 @@ class _EditUserPageState extends State<EditUserPage> {
           TextFormField(controller: _startDateController, decoration: const InputDecoration(labelText: 'Tanggal Mulai'), readOnly: true, onTap: () => _selectDate(context, _startDateController), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
           TextFormField(controller: _endDateController, decoration: const InputDecoration(labelText: 'Tanggal Selesai'), readOnly: true, onTap: () => _selectDate(context, _endDateController), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(value: _selectedInternType, decoration: const InputDecoration(labelText: 'Jenis Magang'), items: ['Magang Sekolah', 'Magang Universitas', 'Magang MBKM', 'Magang/Training Kerja'].map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => _selectedInternType = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
           const SizedBox(height: 16),
           Consumer<UserProvider>(
             builder: (context, provider, child) {
