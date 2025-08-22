@@ -142,7 +142,7 @@ class _AddUserPageState extends State<AddUserPage> {
         TextFormField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Password'), obscureText: true, validator: (v) => v!.isEmpty ? 'Password wajib diisi' : null),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
-          value: _selectedRole,
+          initialValue: _selectedRole,
           decoration: const InputDecoration(labelText: 'Role'),
           items: ['intern', 'supervisor', 'admin'].map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
           onChanged: (v) => setState(() => _selectedRole = v!),
@@ -163,7 +163,7 @@ class _AddUserPageState extends State<AddUserPage> {
           const SizedBox(height: 16),
           TextFormField(controller: _majorController, decoration: const InputDecoration(labelText: 'Jurusan'), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(value: _selectedGender, decoration: const InputDecoration(labelText: 'Jenis Kelamin'), items: ['Pria', 'Wanita'].map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(), onChanged: (v) => setState(() => _selectedGender = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
+          DropdownButtonFormField<String>(initialValue: _selectedGender, decoration: const InputDecoration(labelText: 'Jenis Kelamin'), items: ['Pria', 'Wanita'].map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(), onChanged: (v) => setState(() => _selectedGender = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
           const SizedBox(height: 16),
           TextFormField(controller: _phoneNumberController, decoration: const InputDecoration(labelText: 'Nomor Telepon'), keyboardType: TextInputType.phone, validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
@@ -173,13 +173,13 @@ class _AddUserPageState extends State<AddUserPage> {
           const SizedBox(height: 16),
           TextFormField(controller: _endDateController, decoration: const InputDecoration(labelText: 'Tanggal Selesai'), readOnly: true, onTap: () => _selectDate(context, _endDateController), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(value: _selectedInternType, decoration: const InputDecoration(labelText: 'Jenis Magang'), items: ['Magang Sekolah', 'Magang Universitas', 'Magang MBKM', 'Magang/Training Kerja'].map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => _selectedInternType = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
+          DropdownButtonFormField<String>(initialValue: _selectedInternType, decoration: const InputDecoration(labelText: 'Jenis Magang'), items: ['school', 'college'].map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => _selectedInternType = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
           const SizedBox(height: 16),
           Consumer<UserProvider>(
             builder: (context, provider, child) {
               final uniqueSupervisors = {for (var s in provider.supervisors) s.id: s}.values.toList();
               return DropdownButtonFormField<String>(
-                value: _selectedSupervisorId,
+                initialValue: _selectedSupervisorId,
                 decoration: const InputDecoration(labelText: 'Supervisor'),
                 items: uniqueSupervisors.map((s) => DropdownMenuItem(value: s.id, child: Text(s.fullName))).toList(),
                 onChanged: (value) => setState(() => _selectedSupervisorId = value),
