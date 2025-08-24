@@ -32,7 +32,7 @@ class InternModel {
   factory InternModel.fromJson(Map<String, dynamic> json) {
     return InternModel(
       id: json['id'].toString(),
-      fullName: json['full_name'],
+      fullName: json['full_name'] ?? 'Nama tidak tersedia',
       division: json['division'],
       schoolOrigin: json['school_origin'],
       major: json['major'],
