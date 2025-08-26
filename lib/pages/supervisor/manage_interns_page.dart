@@ -1,5 +1,6 @@
 import 'package:app_simagang/api/supervisor_service.dart';
 import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/pages/supervisor/add_assignment_page.dart';
 import 'package:app_simagang/pages/supervisor/intern_detail_page.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,12 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
                 title: const Text('Tambah Modul Baru'),
                 onTap: () {
                   Navigator.pop(context);
-                  _showComingSoonSnackBar(context, 'Navigasi ke halaman tambah modul');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddAssignmentPage(type: AssignmentType.module),
+                    ),
+                  );
                 },
               ),
               ListTile(
@@ -40,7 +46,12 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
                 title: const Text('Tambah Tugas Baru'),
                 onTap: () {
                   Navigator.pop(context);
-                  _showComingSoonSnackBar(context, 'Navigasi ke halaman tambah tugas');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddAssignmentPage(type: AssignmentType.task),
+                    ),
+                  );
                 },
               ),
             ],
@@ -134,9 +145,9 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
                               style: TextStyle(color: Colors.grey[700]),
                             ),
                             Text(
-                              internData.schoolOrigin ?? 'Tanpa Asal Sekolah',
-                              style: TextStyle(color: Colors.grey[700]),
-                            )
+                              internData.schoolOrigin ?? 'Asal Sekolah Tidak Diketahui',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
                           ],
                         ),
                       ),

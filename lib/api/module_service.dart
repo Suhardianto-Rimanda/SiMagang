@@ -1,3 +1,5 @@
+// lib/api/module_service.dart
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -13,7 +15,8 @@ class ModuleService {
     return prefs.getString('token');
   }
 
-  Future<bool> createModule({
+  // Mengembalikan objek LearningModule yang baru dibuat agar ID-nya bisa didapat
+  Future<LearningModuleModel?> createModule({
     required String title,
     required String description,
     File? file,
@@ -34,12 +37,18 @@ class ModuleService {
       request.files.add(await http.MultipartFile.fromPath('file', file.path));
     }
 
-    final response = await request.send();
-    return response.statusCode == 201;
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 201) {
+      return LearningModuleModel.fromJson(json.decode(response.body)['data']);
+    } else {
+      return null;
+    }
   }
 
   // Menugaskan module ke intern
-  Future<bool> assignModuleToInterns(int moduleId, List<int> internIds) async {
+  Future<bool> assignModuleToInterns(String moduleId, List<String> internIds) async {
     final token = await _getToken();
     if (token == null) throw Exception('Token not found');
 
@@ -58,24 +67,22 @@ class ModuleService {
     return response.statusCode == 200;
   }
 
-  // Mendapatkan semua learning modules
-  Future<List<LearningModuleModel>> getLearningModules() async {
-    final token = await _getToken();
-    if (token == null) throw Exception('Token not found');
-
-    final response = await http.get(
-      Uri.parse('$baseUrl/learning-modules'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body)['data'];
-      return data.map((json) => LearningModuleModel.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load learning modules');
+  // Method gabungan untuk membuat dan menugaskan modul
+  Future<bool> createAndAssignModule({
+    required String title,
+    required String description,
+    File? file,
+    required List<String> internIds,
+  }) async {
+    try {
+      final newModule = await createModule(title: title, description: description, file: file);
+      if (newModule != null) {
+        return await assignModuleToInterns(newModule.id, internIds);
+      }
+      return false;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 }

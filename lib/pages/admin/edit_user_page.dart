@@ -190,7 +190,7 @@ class _EditUserPageState extends State<EditUserPage> {
           const SizedBox(height: 16),
           TextFormField(controller: _endDateController, decoration: const InputDecoration(labelText: 'Tanggal Selesai'), readOnly: true, onTap: () => _selectDate(context, _endDateController), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(initialValue: _selectedInternType, decoration: const InputDecoration(labelText: 'Jenis Magang'), items: ['school', 'college'].map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => _selectedInternType = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
+          DropdownButtonFormField<String>(initialValue: _selectedInternType, decoration: const InputDecoration(labelText: 'Jenis Magang'), items: ['School', 'College'].map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(), onChanged: (v) => setState(() => _selectedInternType = v), validator: (v) => v == null ? 'Wajib dipilih' : null),
           const SizedBox(height: 16),
           Consumer<UserProvider>(
             builder: (context, provider, child) {
