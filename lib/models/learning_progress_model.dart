@@ -1,28 +1,30 @@
 class LearningProgressModel {
   final String id;
-  final String title;
-  final String description;
   final String progressStatus;
+
   final String moduleId;
   final String internId;
 
+  final String? moduleTitle;
+  final String? internName;
+
   LearningProgressModel({
     required this.id,
-    required this.title,
-    required this.description,
     required this.progressStatus,
     required this.moduleId,
     required this.internId,
+    this.moduleTitle,
+    this.internName,
   });
 
   factory LearningProgressModel.fromJson(Map<String, dynamic> json) {
     return LearningProgressModel(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      progressStatus: json['progress_status'],
-      moduleId: json['module_id'],
-      internId: json['intern_id'],
+      id: json['id'] ?? '',
+      progressStatus: json['progress_status'] ?? 'pending',
+      moduleId: json['module_id'] ?? '',
+      internId: json['intern_id'] ?? '',
+      moduleTitle: json['module']?['title'],
+      internName: json['intern']?['user']?['name'],
     );
   }
 }

@@ -1,4 +1,7 @@
+import 'package:app_simagang/pages/supervisor/learning_progress_page.dart';
 import 'package:app_simagang/pages/supervisor/manage_interns_page.dart';
+import 'package:app_simagang/pages/supervisor/manage_modules_page.dart';
+import 'package:app_simagang/pages/supervisor/manage_tasks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -67,7 +70,6 @@ class SupervisorHomePage extends StatelessWidget {
                   icon: Icons.people_outline,
                   title: 'Kelola Peserta Magang',
                   onTap: () {
-                    // Navigasi ke halaman Manage Interns
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -79,8 +81,10 @@ class SupervisorHomePage extends StatelessWidget {
                   icon: Icons.library_books_outlined,
                   title: 'Kelola Modul Belajar',
                   onTap: () {
-                    // TODO: Navigasi ke halaman Manage Modules
-                    _showComingSoonSnackBar(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ManageModulesPage()));
                   },
                 ),
                 _buildFeatureCard(
@@ -88,8 +92,10 @@ class SupervisorHomePage extends StatelessWidget {
                   icon: Icons.assignment_outlined,
                   title: 'Kelola Tugas',
                   onTap: () {
-                    // TODO: Navigasi ke halaman Manage Tasks
-                    _showComingSoonSnackBar(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ManageTasksPage()));
                   },
                 ),
                 _buildFeatureCard(
@@ -97,8 +103,10 @@ class SupervisorHomePage extends StatelessWidget {
                   icon: Icons.trending_up,
                   title: 'Lihat Progress Magang',
                   onTap: () {
-                    // TODO: Navigasi ke halaman Intern Progress
-                    _showComingSoonSnackBar(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LearningProgressPage()));
                   },
                 ),
               ],
@@ -131,26 +139,19 @@ class SupervisorHomePage extends StatelessWidget {
             children: [
               Icon(icon, size: 48, color: Theme.of(context).primaryColor),
               const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Flexible(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showComingSoonSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Fitur ini sedang dalam pengembangan.'),
-        duration: Duration(seconds: 2),
       ),
     );
   }

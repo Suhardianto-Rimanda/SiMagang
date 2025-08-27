@@ -15,7 +15,6 @@ class ModuleService {
     return prefs.getString('token');
   }
 
-  // Mengembalikan objek LearningModule yang baru dibuat agar ID-nya bisa didapat
   Future<LearningModuleModel?> createModule({
     required String title,
     required String description,
@@ -47,7 +46,6 @@ class ModuleService {
     }
   }
 
-  // Menugaskan module ke intern
   Future<bool> assignModuleToInterns(String moduleId, List<String> internIds) async {
     final token = await _getToken();
     if (token == null) throw Exception('Token not found');
@@ -67,7 +65,6 @@ class ModuleService {
     return response.statusCode == 200;
   }
 
-  // Method gabungan untuk membuat dan menugaskan modul
   Future<bool> createAndAssignModule({
     required String title,
     required String description,
@@ -83,6 +80,26 @@ class ModuleService {
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<List<LearningModuleModel>> getLearningModules() async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Token not found');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/learning-modules'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body)['data'];
+      return data.map((json) => LearningModuleModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load learning modules');
     }
   }
 }
