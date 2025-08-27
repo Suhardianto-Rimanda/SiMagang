@@ -1,17 +1,47 @@
+// lib/pages/supervisor/task_detail_page.dart
+
+import 'package:app_simagang/api/supervisor_service.dart';
+import 'package:app_simagang/models/submission_model.dart';
 import 'package:app_simagang/models/task_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class TaskDetailPage extends StatelessWidget {
+class TaskDetailPage extends StatefulWidget {
   final Task task;
 
   const TaskDetailPage({super.key, required this.task});
 
   @override
+  State<TaskDetailPage> createState() => _TaskDetailPageState();
+}
+
+class _TaskDetailPageState extends State<TaskDetailPage> {
+  late Future<List<SubmissionModel>> _submissionsFuture;
+  final SupervisorService _supervisorService = SupervisorService();
+
+  @override
+  void initState() {
+    super.initState();
+    _submissionsFuture = _supervisorService.getTaskSubmissions(widget.task.id);
+  }
+
+  Future<void> _launchUrl(String? urlString) async {
+    if (urlString != null) {
+      final Uri url = Uri.parse(urlString);
+      if (!await launchUrl(url)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch $urlString')),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(task.title),
+        title: Text(widget.task.title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -19,25 +49,56 @@ class TaskDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              task.title,
+              widget.task.title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text('Tenggat: ${DateFormat('dd MMMM yyyy').format(task.dueDate)}'),
+            Text('Tenggat: ${DateFormat('dd MMMM yyyy').format(widget.task.dueDate)}'),
             const SizedBox(height: 8),
-            Text(task.description),
+            Text(widget.task.description),
             const Divider(height: 32),
             const Text(
               'Pengumpulan Tugas (Submission)',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            // TODO: Implement API call to get submissions for this task
-            // and display them in a list. Each item should have a button
-            // to view the submitted file.
-            const Expanded(
-              child: Center(
-                child: Text('Fitur untuk menampilkan submission intern akan ditambahkan di sini.'),
+            Expanded(
+              child: FutureBuilder<List<SubmissionModel>>(
+                future: _submissionsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('Belum ada tugas yang dikumpulkan.'));
+                  }
+
+                  final submissions = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: submissions.length,
+                    itemBuilder: (context, index) {
+                      final submission = submissions[index];
+                      final attempt = submission.attempts.isNotEmpty ? submission.attempts.first : null;
+
+                      // PERBAIKAN: Mengakses nama dengan aman dari model yang sudah diperbarui
+                      final internName = submission.intern?.fullName ?? 'Nama Intern Tidak Ada';
+
+                      return Card(
+                        child: ListTile(
+                          title: Text(internName),
+                          subtitle: Text('Dikumpulkan pada: ${DateFormat('dd MMM yyyy, HH:mm').format(submission.submissionDate)}'),
+                          trailing: attempt?.filePath != null
+                              ? ElevatedButton(
+                            onPressed: () => _launchUrl(attempt!.filePath),
+                            child: const Text('Lihat File'),
+                          )
+                              : const Text('Tidak ada file'),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],

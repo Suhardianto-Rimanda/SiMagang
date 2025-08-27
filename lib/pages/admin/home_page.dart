@@ -1,4 +1,6 @@
-import 'manage_user_page.dart';
+import 'package:app_simagang/pages/admin/activity_reports_page.dart';
+import 'package:app_simagang/pages/admin/learning_progress_page.dart';
+import 'package:app_simagang/pages/admin/manage_user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_simagang/providers/auth_provider.dart';
@@ -52,7 +54,10 @@ class AdminHomePage extends StatelessWidget {
                 icon: Icons.assignment_outlined,
                 label: 'Laporan Aktivitas',
                 onTap: () {
-                  // TODO: Navigasi ke halaman laporan
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AllActivityReportsPage()),
+                  );
                 },
               ),
               _buildDashboardCard(
@@ -60,15 +65,10 @@ class AdminHomePage extends StatelessWidget {
                 icon: Icons.task_alt,
                 label: 'Progres Magang',
                 onTap: () {
-                  // TODO: Navigasi ke halaman progres
-                },
-              ),
-              _buildDashboardCard(
-                context,
-                icon: Icons.settings_outlined,
-                label: 'Pengaturan',
-                onTap: () {
-                  // TODO: Navigasi ke halaman pengaturan
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AllLearningProgressPage()),
+                  );
                 },
               ),
             ],
