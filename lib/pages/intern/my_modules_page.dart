@@ -1,7 +1,7 @@
-import 'package:app_simagang/api/intern_service.dart';
-import 'package:app_simagang/models/learning_module_model.dart';
 import 'package:app_simagang/pages/intern/module_feedback_page.dart';
+import 'package:app_simagang/providers/intern_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyModulesPage extends StatefulWidget {
   const MyModulesPage({super.key});
@@ -11,13 +11,12 @@ class MyModulesPage extends StatefulWidget {
 }
 
 class _MyModulesPageState extends State<MyModulesPage> {
-  late Future<List<LearningModuleModel>> _modulesFuture;
-  final InternService _internService = InternService();
-
   @override
   void initState() {
     super.initState();
-    _modulesFuture = _internService.getMyLearningModules();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<InternProvider>(context, listen: false).fetchMyLearningModules();
+    });
   }
 
   @override
@@ -28,18 +27,19 @@ class _MyModulesPageState extends State<MyModulesPage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: FutureBuilder<List<LearningModuleModel>>(
-        future: _modulesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<InternProvider>(
+        builder: (context, provider, child) {
+          if (provider.modulesState == ViewState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          if (provider.modulesState == ViewState.error) {
+            return Center(child: Text('Gagal memuat data: ${provider.errorMessage}'));
+          }
+          if (provider.modules.isEmpty) {
             return const Center(child: Text('Belum ada modul yang ditugaskan.'));
           }
 
-          final modules = snapshot.data!;
+          final modules = provider.modules;
           return ListView.builder(
             itemCount: modules.length,
             itemBuilder: (context, index) {

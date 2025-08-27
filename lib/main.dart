@@ -3,6 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/admin_provider.dart';
+import 'providers/intern_provider.dart';
 import 'package:app_simagang/pages/auth/auth_wrapper.dart';
 
 void main() async {
@@ -21,6 +23,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => InternProvider()),
+        ChangeNotifierProvider(create: (context) => AdminProvider()),
       ],
       child: MaterialApp(
         title: 'SiMagang',

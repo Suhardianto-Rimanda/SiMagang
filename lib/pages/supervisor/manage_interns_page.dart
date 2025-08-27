@@ -1,8 +1,9 @@
-import 'package:app_simagang/api/supervisor_service.dart';
 import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/providers/supervisor_provider.dart';
 import 'package:app_simagang/pages/supervisor/add_assignment_page.dart';
 import 'package:app_simagang/pages/supervisor/intern_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ManageInternsPage extends StatefulWidget {
   const ManageInternsPage({super.key});
@@ -13,12 +14,13 @@ class ManageInternsPage extends StatefulWidget {
 
 class _ManageInternsPageState extends State<ManageInternsPage> {
   late Future<List<UserModel>> _internsFuture;
-  final SupervisorService _supervisorService = SupervisorService();
 
   @override
   void initState() {
     super.initState();
-    _internsFuture = _supervisorService.getSupervisorInterns();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SupervisorProvider>(context, listen: false).fetchSupervisorInterns();
+    });
   }
 
   void _showAddOptions(BuildContext context) {

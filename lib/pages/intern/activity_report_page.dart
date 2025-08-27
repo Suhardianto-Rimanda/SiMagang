@@ -1,8 +1,8 @@
-import 'package:app_simagang/api/intern_service.dart';
-import 'package:app_simagang/models/activity_report_model.dart';
-import 'package:app_simagang/pages/intern/add_edit_activity_report_page.dart';
+import 'package:app_simagang/providers/intern_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'add_edit_activity_report_page.dart';
 
 class ActivityReportPage extends StatefulWidget {
   const ActivityReportPage({super.key});
@@ -12,18 +12,15 @@ class ActivityReportPage extends StatefulWidget {
 }
 
 class _ActivityReportPageState extends State<ActivityReportPage> {
-  late Future<List<ActivityReportModel>> _reportsFuture;
-  final InternService _internService = InternService();
-
   @override
   void initState() {
     super.initState();
-    _reportsFuture = _internService.getActivityReports();
+    _refreshReports();
   }
 
   void _refreshReports() {
-    setState(() {
-      _reportsFuture = _internService.getActivityReports();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<InternProvider>(context, listen: false).fetchActivityReports();
     });
   }
 
@@ -35,18 +32,19 @@ class _ActivityReportPageState extends State<ActivityReportPage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: FutureBuilder<List<ActivityReportModel>>(
-        future: _reportsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<InternProvider>(
+        builder: (context, provider, child) {
+          if (provider.reportsState == ViewState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          if (provider.reportsState == ViewState.error) {
+            return Center(child: Text('Gagal memuat data: ${provider.errorMessage}'));
+          }
+          if (provider.reports.isEmpty) {
             return const Center(child: Text('Belum ada laporan yang dibuat.'));
           }
 
-          final reports = snapshot.data!;
+          final reports = provider.reports;
           return ListView.builder(
             itemCount: reports.length,
             itemBuilder: (context, index) {

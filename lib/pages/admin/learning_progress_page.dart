@@ -1,7 +1,8 @@
 // lib/pages/admin/all_learning_progress_page.dart
-import 'package:app_simagang/api/admin_service.dart';
-import 'package:app_simagang/models/learning_progress_model.dart';
+
+import 'package:app_simagang/providers/admin_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AllLearningProgressPage extends StatefulWidget {
   const AllLearningProgressPage({super.key});
@@ -11,13 +12,12 @@ class AllLearningProgressPage extends StatefulWidget {
 }
 
 class _AllLearningProgressPageState extends State<AllLearningProgressPage> {
-  late Future<List<LearningProgressModel>> _progressFuture;
-  final AdminService _adminService = AdminService();
-
   @override
   void initState() {
     super.initState();
-    _progressFuture = _adminService.getAllLearningProgress();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AdminProvider>(context, listen: false).fetchAllLearningProgress();
+    });
   }
 
   @override
@@ -26,18 +26,19 @@ class _AllLearningProgressPageState extends State<AllLearningProgressPage> {
       appBar: AppBar(
         title: const Text('Semua Progress Magang'),
       ),
-      body: FutureBuilder<List<LearningProgressModel>>(
-        future: _progressFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<AdminProvider>(
+        builder: (context, provider, child) {
+          if (provider.progressesState == ViewState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          if (provider.progressesState == ViewState.error) {
+            return Center(child: Text('Gagal memuat data: ${provider.errorMessage}'));
+          }
+          if (provider.progresses.isEmpty) {
             return const Center(child: Text('Tidak ada data progress.'));
           }
 
-          final progresses = snapshot.data!;
+          final progresses = provider.progresses;
           return ListView.builder(
             itemCount: progresses.length,
             itemBuilder: (context, index) {

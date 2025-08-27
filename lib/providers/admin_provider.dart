@@ -1,19 +1,19 @@
-// lib/providers/supervisor_provider.dart
+// lib/providers/admin_provider.dart
 
 import 'package:flutter/material.dart';
-import 'package:app_simagang/api/supervisor_service.dart';
-import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/api/admin_service.dart';
+import 'package:app_simagang/models/activity_report_model.dart';
 import 'package:app_simagang/models/learning_progress_model.dart';
 
 enum ViewState { idle, loading, error }
 
-class SupervisorProvider with ChangeNotifier {
-  final SupervisorService _supervisorService = SupervisorService();
+class AdminProvider with ChangeNotifier {
+  final AdminService _adminService = AdminService();
 
-  List<UserModel> _interns = [];
-  List<UserModel> get interns => _interns;
-  ViewState _internsState = ViewState.idle;
-  ViewState get internsState => _internsState;
+  List<ActivityReportModel> _reports = [];
+  List<ActivityReportModel> get reports => _reports;
+  ViewState _reportsState = ViewState.idle;
+  ViewState get reportsState => _reportsState;
 
   List<LearningProgressModel> _progresses = [];
   List<LearningProgressModel> get progresses => _progresses;
@@ -25,8 +25,8 @@ class SupervisorProvider with ChangeNotifier {
 
   void _setState(ViewState state, String feature) {
     switch (feature) {
-      case 'interns':
-        _internsState = state;
+      case 'reports':
+        _reportsState = state;
         break;
       case 'progresses':
         _progressesState = state;
@@ -35,21 +35,21 @@ class SupervisorProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchSupervisorInterns() async {
-    _setState(ViewState.loading, 'interns');
+  Future<void> fetchAllActivityReports() async {
+    _setState(ViewState.loading, 'reports');
     try {
-      _interns = await _supervisorService.getSupervisorInterns();
-      _setState(ViewState.idle, 'interns');
+      _reports = await _adminService.getAllActivityReports();
+      _setState(ViewState.idle, 'reports');
     } catch (e) {
       _errorMessage = e.toString();
-      _setState(ViewState.error, 'interns');
+      _setState(ViewState.error, 'reports');
     }
   }
 
-  Future<void> fetchLearningProgress() async {
+  Future<void> fetchAllLearningProgress() async {
     _setState(ViewState.loading, 'progresses');
     try {
-      _progresses = await _supervisorService.getLearningProgress();
+      _progresses = await _adminService.getAllLearningProgress();
       _setState(ViewState.idle, 'progresses');
     } catch (e) {
       _errorMessage = e.toString();

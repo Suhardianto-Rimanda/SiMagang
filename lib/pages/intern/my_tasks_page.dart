@@ -1,8 +1,8 @@
-import 'package:app_simagang/api/intern_service.dart';
-import 'package:app_simagang/models/task_model.dart';
 import 'package:app_simagang/pages/intern/task_submission_page.dart';
+import 'package:app_simagang/providers/intern_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MyTasksPage extends StatefulWidget {
   const MyTasksPage({super.key});
@@ -12,13 +12,13 @@ class MyTasksPage extends StatefulWidget {
 }
 
 class _MyTasksPageState extends State<MyTasksPage> {
-  late Future<List<Task>> _tasksFuture;
-  final InternService _internService = InternService();
-
   @override
   void initState() {
     super.initState();
-    _tasksFuture = _internService.getMyTasks();
+    // Memanggil business logic dari provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<InternProvider>(context, listen: false).fetchMyTasks();
+    });
   }
 
   @override
@@ -29,18 +29,20 @@ class _MyTasksPageState extends State<MyTasksPage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: FutureBuilder<List<Task>>(
-        future: _tasksFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      // Menggunakan Consumer untuk 'mendengarkan' perubahan state dari provider
+      body: Consumer<InternProvider>(
+        builder: (context, provider, child) {
+          if (provider.tasksState == ViewState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          if (provider.tasksState == ViewState.error) {
+            return Center(child: Text('Gagal memuat data: ${provider.errorMessage}'));
+          }
+          if (provider.tasks.isEmpty) {
             return const Center(child: Text('Belum ada tugas yang diberikan.'));
           }
 
-          final tasks = snapshot.data!;
+          final tasks = provider.tasks;
           return ListView.builder(
             itemCount: tasks.length,
             itemBuilder: (context, index) {

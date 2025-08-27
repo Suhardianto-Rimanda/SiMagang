@@ -1,9 +1,7 @@
-// lib/pages/admin/all_activity_reports_page.dart
-
-import 'package:app_simagang/api/admin_service.dart';
-import 'package:app_simagang/models/activity_report_model.dart';
+import 'package:app_simagang/providers/admin_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AllActivityReportsPage extends StatefulWidget {
   const AllActivityReportsPage({super.key});
@@ -13,13 +11,12 @@ class AllActivityReportsPage extends StatefulWidget {
 }
 
 class _AllActivityReportsPageState extends State<AllActivityReportsPage> {
-  late Future<List<ActivityReportModel>> _reportsFuture;
-  final AdminService _adminService = AdminService();
-
   @override
   void initState() {
     super.initState();
-    _reportsFuture = _adminService.getAllActivityReports();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AdminProvider>(context, listen: false).fetchAllActivityReports();
+    });
   }
 
   @override
@@ -28,18 +25,19 @@ class _AllActivityReportsPageState extends State<AllActivityReportsPage> {
       appBar: AppBar(
         title: const Text('Semua Laporan Aktivitas'),
       ),
-      body: FutureBuilder<List<ActivityReportModel>>(
-        future: _reportsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<AdminProvider>(
+        builder: (context, provider, child) {
+          if (provider.reportsState == ViewState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          if (provider.reportsState == ViewState.error) {
+            return Center(child: Text('Gagal memuat data: ${provider.errorMessage}'));
+          }
+          if (provider.reports.isEmpty) {
             return const Center(child: Text('Tidak ada laporan aktivitas.'));
           }
 
-          final reports = snapshot.data!;
+          final reports = provider.reports;
           return ListView.builder(
             itemCount: reports.length,
             itemBuilder: (context, index) {
