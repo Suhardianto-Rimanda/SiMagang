@@ -16,6 +16,8 @@ class AdminHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -90,7 +92,7 @@ class AdminHomePage extends StatelessWidget {
         children: [
           Text(
             'Selamat Datang Kembali,',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white70),
           ),
           const SizedBox(height: 4),
           Text(
@@ -112,7 +114,7 @@ class AdminHomePage extends StatelessWidget {
         required VoidCallback onTap,
       }) {
     return Card(
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
@@ -125,7 +127,7 @@ class AdminHomePage extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleSmall,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 class LearningProgressModel {
   final String id;
+  final String description;
   final String progressStatus;
 
   final String moduleId;
@@ -10,6 +11,7 @@ class LearningProgressModel {
 
   LearningProgressModel({
     required this.id,
+    this.description = '',
     required this.progressStatus,
     required this.moduleId,
     required this.internId,
@@ -20,6 +22,7 @@ class LearningProgressModel {
   factory LearningProgressModel.fromJson(Map<String, dynamic> json) {
     return LearningProgressModel(
       id: json['id'] ?? '',
+      description: json['description'] ?? '',
       progressStatus: json['progress_status'] ?? 'pending',
       moduleId: json['module_id'] ?? '',
       internId: json['intern_id'] ?? '',

@@ -1,9 +1,10 @@
-import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/pages/supervisor/intern_progress_detail_page.dart';
 import 'package:app_simagang/providers/supervisor_provider.dart';
-import 'package:app_simagang/pages/supervisor/add_assignment_page.dart';
-import 'package:app_simagang/pages/supervisor/intern_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/pages/supervisor/intern_detail_page.dart';
+import 'package:app_simagang/pages/supervisor/add_assignment_page.dart';
 
 class ManageInternsPage extends StatefulWidget {
   const ManageInternsPage({super.key});
@@ -13,8 +14,6 @@ class ManageInternsPage extends StatefulWidget {
 }
 
 class _ManageInternsPageState extends State<ManageInternsPage> {
-  late Future<List<UserModel>> _internsFuture;
-
   @override
   void initState() {
     super.initState();
@@ -72,7 +71,12 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
         ),
       );
     } else if (value == 'progress') {
-      _showComingSoonSnackBar(context, 'Navigasi ke halaman progress ${internUser.intern?.fullName}');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InternProgressDetailPage(internUser: internUser),
+        ),
+      );
     }
   }
 
@@ -84,18 +88,19 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: FutureBuilder<List<UserModel>>(
-        future: _internsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<SupervisorProvider>(
+        builder: (context, provider, child) {
+          if (provider.internsState == ViewState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Belum ada peserta magang yang dibimbing.'));
+          }
+          if (provider.internsState == ViewState.error) {
+            return Center(child: Text('Gagal memuat data: ${provider.errorMessage}'));
+          }
+          if (provider.interns.isEmpty) {
+            return const Center(child: Text('Belum ada peserta magang.'));
           }
 
-          final internUsers = snapshot.data!;
+          final internUsers = provider.interns;
           return ListView.builder(
             padding: const EdgeInsets.only(bottom: 80),
             itemCount: internUsers.length,
@@ -147,7 +152,7 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
                               style: TextStyle(color: Colors.grey[700]),
                             ),
                             Text(
-                              internData.schoolOrigin ?? 'Asal Sekolah Tidak Diketahui',
+                              internUser.email,
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
@@ -178,15 +183,6 @@ class _ManageInternsPageState extends State<ManageInternsPage> {
         onPressed: () => _showAddOptions(context),
         tooltip: 'Tambah Modul atau Tugas',
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _showComingSoonSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
       ),
     );
   }

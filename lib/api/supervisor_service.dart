@@ -120,4 +120,27 @@ class SupervisorService {
       throw Exception('Failed to load task submissions');
     }
   }
+
+  Future<List<LearningProgressModel>> getInternProgress(String internId) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Token not found');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/supervisor/interns/$internId/learning-progress'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body)['data'];
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map((json) => LearningProgressModel.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load intern progress');
+    }
+  }
 }

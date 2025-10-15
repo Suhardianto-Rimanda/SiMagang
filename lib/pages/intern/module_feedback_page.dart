@@ -15,15 +15,13 @@ class ModuleFeedbackPage extends StatefulWidget {
 
 class _ModuleFeedbackPageState extends State<ModuleFeedbackPage> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController(); // Ditambahkan
+  final _titleController = TextEditingController();
   final _feedbackController = TextEditingController();
   final InternService _internService = InternService();
 
-  // PERBAIKAN: Nilai disesuaikan dengan backend
   String _selectedStatus = 'in_progress';
   bool _isLoading = false;
 
-  // Opsi untuk dropdown agar UI tetap ramah pengguna
   final Map<String, String> _statusOptions = {
     'in_progress': 'In Progress',
     'done': 'Completed',
@@ -101,7 +99,6 @@ class _ModuleFeedbackPageState extends State<ModuleFeedbackPage> {
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 5,
-                // Deskripsi sekarang boleh kosong (nullable)
                 validator: null,
               ),
               const SizedBox(height: 16),
@@ -111,11 +108,10 @@ class _ModuleFeedbackPageState extends State<ModuleFeedbackPage> {
                   labelText: 'Status Pengerjaan',
                   border: OutlineInputBorder(),
                 ),
-                // PERBAIKAN: Menggunakan map untuk memisahkan nilai dan tampilan
                 items: _statusOptions.entries.map((entry) {
                   return DropdownMenuItem<String>(
-                    value: entry.key, // Nilai yang dikirim: 'in_progress' atau 'done'
-                    child: Text(entry.value), // Teks yang ditampilkan: 'In Progress' atau 'Completed'
+                    value: entry.key,
+                    child: Text(entry.value),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {

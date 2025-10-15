@@ -339,7 +339,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
                           // Footer Text
                           Text(
-                            '© 2024 SiMagang',
+                            '© 2025 SiMagang',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.grey.shade500,
