@@ -44,13 +44,23 @@ class _MyModulesPageState extends State<MyModulesPage> {
             itemCount: modules.length,
             itemBuilder: (context, index) {
               final module = modules[index];
+              final bool isCompleted = module.progress?.progressStatus == 'done';
+
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: const Icon(Icons.library_books),
                   title: Text(module.title, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(module.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: isCompleted
+                      ? const Chip(
+                    label: Text('Selesai', style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  )
+                      : const Icon(
+                      Icons.chevron_right
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,

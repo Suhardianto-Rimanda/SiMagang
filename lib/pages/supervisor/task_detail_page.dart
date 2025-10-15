@@ -4,6 +4,7 @@ import 'package:app_simagang/api/supervisor_service.dart';
 import 'package:app_simagang/models/submission_model.dart';
 import 'package:app_simagang/models/task_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,12 +27,35 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     _submissionsFuture = _supervisorService.getTaskSubmissions(widget.task.id);
   }
 
-  Future<void> _launchUrl(String? urlString) async {
-    if (urlString != null) {
-      final Uri url = Uri.parse(urlString);
-      if (!await launchUrl(url)) {
+  Future<void> _launchUrl(String? relativePath) async {
+    if (relativePath == null || relativePath.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Path file tidak valid.')),
+      );
+      return;
+    }
+
+    try {
+      final String? baseUrlString = dotenv.env['BASE_URL'];
+      if (baseUrlString == null || baseUrlString.isEmpty) {
+        throw Exception('BASE_URL tidak dikonfigurasi di .env');
+      }
+
+      // Membangun URL yang benar dengan mengambil origin dari BASE_URL
+      final apiUri = Uri.parse(baseUrlString);
+      final storageUrl = '${apiUri.scheme}://${apiUri.host}:${apiUri.port}/storage/$relativePath';
+
+      final urlToLaunch = Uri.parse(storageUrl);
+
+      if (await canLaunchUrl(urlToLaunch)) {
+        await launchUrl(urlToLaunch, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception('Tidak dapat membuka $storageUrl');
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not launch $urlString')),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
     }

@@ -1,10 +1,60 @@
 import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/utils/report_generator.dart';
+import 'package:app_simagang/api/supervisor_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class InternDetailPage extends StatelessWidget {
   final UserModel internUser;
 
   const InternDetailPage({super.key, required this.internUser});
+
+  Future<void> _showPrintDialog(BuildContext context) async {
+    DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDateRange: DateTimeRange(
+        start: DateTime.now().subtract(const Duration(days: 7)),
+        end: DateTime.now(),
+      ),
+      helpText: 'Pilih Rentang Tanggal Laporan',
+    );
+
+    if (picked != null) {
+      // Tampilkan loading
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) =>
+          const Center(child: CircularProgressIndicator()));
+
+      try {
+        final supervisorService = SupervisorService();
+        final startDate = DateFormat('yyyy-MM-dd').format(picked.start);
+        final endDate = DateFormat('yyyy-MM-dd').format(picked.end);
+
+        // Ambil data dari API
+        final summaryData = await supervisorService.getReportSummary(internUser.intern!.id, startDate, endDate);
+
+        Navigator.pop(context); // Tutup dialog loading
+
+        // Panggil generator PDF
+        await ReportGenerator.generateAndPrintReport(
+          internUser: internUser,
+          activityReports: summaryData['activity_reports'],
+          learningProgress: summaryData['learning_progress'],
+          startDate: picked.start,
+          endDate: picked.end,
+        );
+      } catch (e) {
+        Navigator.pop(context); // Tutup dialog loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal mengambil data laporan: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +140,11 @@ class InternDetailPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showPrintDialog(context),
+        tooltip: 'Cetak Laporan',
+        child: const Icon(Icons.print),
       ),
     );
   }

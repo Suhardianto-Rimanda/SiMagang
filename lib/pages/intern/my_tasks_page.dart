@@ -47,13 +47,23 @@ class _MyTasksPageState extends State<MyTasksPage> {
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               final task = tasks[index];
+              final bool isSubmitted = task.submission != null; // Cek apakah sudah ada submission
+
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: const Icon(Icons.assignment),
                   title: Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text('Tenggat: ${DateFormat('dd MMMM yyyy').format(task.dueDate)}'),
-                  trailing: const Icon(Icons.chevron_right),
+                  // --- MODIFIKASI TAMPILAN TRAILING ---
+                  trailing: isSubmitted
+                      ? const Chip(
+                    label: Text('Terkumpul', style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  )
+                      : const Icon(Icons.chevron_right),
+                  // --- AKHIR MODIFIKASI ---
                   onTap: () {
                     Navigator.push(
                       context,

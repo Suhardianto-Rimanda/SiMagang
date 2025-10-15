@@ -2,6 +2,7 @@ import 'package:app_simagang/pages/supervisor/learning_progress_page.dart';
 import 'package:app_simagang/pages/supervisor/manage_interns_page.dart';
 import 'package:app_simagang/pages/supervisor/manage_modules_page.dart';
 import 'package:app_simagang/pages/supervisor/manage_tasks_page.dart';
+import 'package:app_simagang/pages/supervisor/activity_reports_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -107,6 +108,17 @@ class SupervisorHomePage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LearningProgressPage()));
+                  },
+                ),
+                _buildFeatureCard(
+                  context,
+                  icon: Icons.summarize_outlined,
+                  title: 'Laporan Aktivitas Intern',
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SupervisorActivityReportsPage()));
                   },
                 ),
               ],

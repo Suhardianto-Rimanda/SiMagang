@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:app_simagang/models/user_model.dart';
 import 'package:app_simagang/models/intern_model.dart';
 import 'package:app_simagang/models/submission_model.dart';
+import 'package:app_simagang/models/activity_report_model.dart';
 import 'package:app_simagang/models/learning_progress_model.dart';
 
 class SupervisorService {
@@ -141,6 +142,60 @@ class SupervisorService {
           .toList();
     } else {
       throw Exception('Failed to load intern progress');
+    }
+  }
+
+  Future<List<ActivityReportModel>> getActivityReports() async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Token not found');
+
+    // Endpoint baru untuk mengambil laporan aktivitas intern di bawah supervisor
+    final response = await http.get(
+      Uri.parse('$baseUrl/supervisor/activity-reports'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body)['data'];
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ActivityReportModel.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load activity reports. Status: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>> getReportSummary(String internId, String startDate, String endDate) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Token not found');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/supervisor/interns/$internId/report-summary?start_date=$startDate&end_date=$endDate'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'];
+      List<ActivityReportModel> reports = (data['activity_reports'] as List)
+          .map((item) => ActivityReportModel.fromJson(item))
+          .toList();
+      List<LearningProgressModel> progresses = (data['learning_progress'] as List)
+          .map((item) => LearningProgressModel.fromJson(item))
+          .toList();
+
+      return {
+        'activity_reports': reports,
+        'learning_progress': progresses,
+      };
+    } else {
+      throw Exception('Failed to load report summary');
     }
   }
 }

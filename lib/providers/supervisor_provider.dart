@@ -1,8 +1,7 @@
-// lib/providers/supervisor_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:app_simagang/api/supervisor_service.dart';
 import 'package:app_simagang/models/user_model.dart';
+import 'package:app_simagang/models/activity_report_model.dart';
 import 'package:app_simagang/models/learning_progress_model.dart';
 
 enum ViewState { idle, loading, error }
@@ -20,6 +19,11 @@ class SupervisorProvider with ChangeNotifier {
   ViewState _progressesState = ViewState.idle;
   ViewState get progressesState => _progressesState;
 
+  List<ActivityReportModel> _activityReports = [];
+  List<ActivityReportModel> get activityReports => _activityReports;
+  ViewState _activityReportsState = ViewState.idle;
+  ViewState get activityReportsState => _activityReportsState;
+
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
@@ -30,6 +34,9 @@ class SupervisorProvider with ChangeNotifier {
         break;
       case 'progresses':
         _progressesState = state;
+        break;
+      case 'activityReports':
+        _activityReportsState = state;
         break;
     }
     notifyListeners();
@@ -54,6 +61,17 @@ class SupervisorProvider with ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString();
       _setState(ViewState.error, 'progresses');
+    }
+  }
+
+  Future<void> fetchActivityReports() async {
+    _setState(ViewState.loading, 'activityReports');
+    try {
+      _activityReports = await _supervisorService.getActivityReports();
+      _setState(ViewState.idle, 'activityReports');
+    } catch (e) {
+      _errorMessage = e.toString();
+      _setState(ViewState.error, 'activityReports');
     }
   }
 }

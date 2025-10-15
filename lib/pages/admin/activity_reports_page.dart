@@ -2,6 +2,7 @@ import 'package:app_simagang/providers/admin_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'activity_report_detail_page.dart';
 
 class AllActivityReportsPage extends StatefulWidget {
   const AllActivityReportsPage({super.key});
@@ -45,10 +46,20 @@ class _AllActivityReportsPageState extends State<AllActivityReportsPage> {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  title: Text(report.title),
+                  title: Text(report.title, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                    '${report.intern?.fullName ?? 'Nama Intern'} - ${DateFormat('dd MMM yyyy').format(report.reportDate)}',
+                    'Oleh: ${report.intern?.fullName ?? 'N/A'}\n${DateFormat('dd MMM yyyy').format(report.reportDate)}',
                   ),
+                  isThreeLine: true, // Tambahkan ini agar subtitle tidak terpotong
+                  trailing: const Icon(Icons.chevron_right), // Tambahkan ikon panah
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdminActivityReportDetailPage(report: report),
+                      ),
+                    );
+                  },
                 ),
               );
             },
