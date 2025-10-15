@@ -55,9 +55,11 @@ class InternService {
     }
   }
 
-  Future<bool> submitTask(String taskId, {File? file, String? text}) async {
+  Future<Map<String, dynamic>> submitTask(String taskId, {File? file, String? text}) async {
     final token = await _getToken();
-    if (token == null) throw Exception('Token not found');
+    if (token == null) {
+      return {'success': false, 'message': 'Token tidak ditemukan'};
+    }
 
     var request = http.MultipartRequest(
       'POST',
@@ -70,12 +72,25 @@ class InternService {
       request.fields['text_submission'] = text;
     }
     if (file != null) {
-      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+      request.files.add(await http.MultipartFile.fromPath('files[]', file.path));
     }
 
-    final response = await request.send();
-    return response.statusCode == 200;
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return {'success': true, 'message': 'Tugas berhasil dikumpulkan!'};
+      } else {
+        final errorData = json.decode(response.body);
+        String errorMessage = errorData['message'] ?? 'Gagal mengumpulkan tugas. Silakan coba lagi.';
+        return {'success': false, 'message': errorMessage};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Tidak dapat terhubung ke server.'};
+    }
   }
+
 
   // Mengirimkan progress pembelajaran
   Future<bool> submitLearningProgress({
@@ -150,6 +165,7 @@ class InternService {
         'title': title,
         'description': description,
         'report_date': reportDate,
+        'report_type': 'Daily',
       }),
     );
 

@@ -40,7 +40,9 @@ class _TaskSubmissionPageState extends State<TaskSubmissionPage> {
       _isLoading = true;
     });
 
-    bool success = await _internService.submitTask(widget.task.id, file: _selectedFile);
+    final result = await _internService.submitTask(widget.task.id, file: _selectedFile);
+    final bool success = result['success'];
+    final String message = result['message'];
 
     setState(() {
       _isLoading = false;
@@ -48,12 +50,12 @@ class _TaskSubmissionPageState extends State<TaskSubmissionPage> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tugas berhasil dikumpulkan!')),
+        SnackBar(content: Text(message)), // Gunakan pesan dari API
       );
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal mengumpulkan tugas. Coba lagi.')),
+        SnackBar(content: Text(message)), // Gunakan pesan error dari API
       );
     }
   }
