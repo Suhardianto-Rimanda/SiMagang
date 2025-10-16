@@ -15,74 +15,53 @@ class ModuleService {
     return prefs.getString('token');
   }
 
-  Future<LearningModuleModel?> createModule({
-    required String title,
-    required String description,
-    File? file,
-  }) async {
-    final token = await _getToken();
-    if (token == null) throw Exception('Token not found');
-
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/learning-modules'),
-    );
-    request.headers['Authorization'] = 'Bearer $token';
-    request.headers['Accept'] = 'application/json';
-    request.fields['title'] = title;
-    request.fields['description'] = description;
-
-    if (file != null) {
-      request.files.add(await http.MultipartFile.fromPath('file', file.path));
-    }
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    if (response.statusCode == 201) {
-      return LearningModuleModel.fromJson(json.decode(response.body)['data']);
-    } else {
-      return null;
-    }
-  }
-
-  Future<bool> assignModuleToInterns(String moduleId, List<String> internIds) async {
-    final token = await _getToken();
-    if (token == null) throw Exception('Token not found');
-
-    final response = await http.post(
-      Uri.parse('$baseUrl/learning-modules/$moduleId/assign'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        'intern_ids': internIds,
-      }),
-    );
-
-    return response.statusCode == 200;
-  }
-
+  // FUNGSI INI SEKARANG MENGGABUNGKAN PEMBUATAN DAN PENUGASAN
   Future<bool> createAndAssignModule({
     required String title,
     required String description,
     File? file,
     required List<String> internIds,
   }) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Token not found');
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/learning-modules'), // Endpoint untuk membuat modul baru
+    );
+
+    // Menambahkan header
+    request.headers['Authorization'] = 'Bearer $token';
+    request.headers['Accept'] = 'application/json';
+
+    // Menambahkan data teks (fields)
+    request.fields['title'] = title;
+    request.fields['description'] = description;
+
+    // Menambahkan array intern_ids
+    for (int i = 0; i < internIds.length; i++) {
+      request.fields['intern_ids[$i]'] = internIds[i];
+    }
+
+    // Menambahkan file jika ada
+    if (file != null) {
+      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+    }
+
     try {
-      final newModule = await createModule(title: title, description: description, file: file);
-      if (newModule != null) {
-        return await assignModuleToInterns(newModule.id, internIds);
-      }
-      return false;
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      // Status 201 berarti 'Created' (sukses)
+      return response.statusCode == 201;
+
     } catch (e) {
-      print(e);
+      print('Error in createAndAssignModule: $e');
       return false;
     }
   }
 
+  // Fungsi getLearningModules tetap sama
   Future<List<LearningModuleModel>> getLearningModules() async {
     final token = await _getToken();
     if (token == null) throw Exception('Token not found');
